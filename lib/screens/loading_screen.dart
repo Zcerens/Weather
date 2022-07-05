@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:weather/screens/main_screen.dart';
 import 'package:weather/utils/location.dart';
+import 'package:weather/utils/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -24,11 +26,28 @@ class _LoadingScreenState extends State<LoadingScreen> {
     }
   }
 
+  void getWeatherData() async {
+    await getLocationData();
+
+    WeatherData weatherData = WeatherData(locationData: locationData);
+    await weatherData.getCurrentTemperature();
+
+    if (weatherData.currentTemperature == null ||
+        weatherData.currentCondition == null) {
+      print("API den sıcaklık veya durum bilgisi boş dönüyor.");
+    }
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return MainScreen(
+        weatherData: weatherData,
+      );
+    }));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getLocationData();
+    getWeatherData();
   }
 
   @override
